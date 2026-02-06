@@ -42,7 +42,6 @@
       z-index: 999;
     }
 
-    /* ────── SCREENS ────── */
     .screen {
       display: none;
       min-height: 100vh;
@@ -59,7 +58,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ────── HOME ────── */
     #home { text-align: center; }
 
     .home-badge {
@@ -116,7 +114,6 @@
     }
     .btn-start:active { transform: translateY(0); }
 
-    /* ────── LEVEL SELECT ────── */
     #levelSelect { gap: 24px; }
 
     .level-title {
@@ -185,7 +182,6 @@
     }
     .btn-back:hover { border-color: var(--text-dim); color: var(--text); }
 
-    /* ────── LOADING ────── */
     #loading { gap: 24px; text-align: center; }
 
     .loader-ring {
@@ -212,7 +208,6 @@
     .error-box .error-icon { font-size: 2.4rem; margin-bottom: 12px; }
     .error-box .error-msg  { color: var(--accent2); font-size: 0.9rem; line-height: 1.5; margin-bottom: 18px; }
 
-    /* ────── GAME ────── */
     #game {
       justify-content: flex-start;
       padding-top: 20px;
@@ -287,8 +282,7 @@
       transition: width 0.4s ease;
     }
 
-    /* ────── THUMBNAIL CARD (검은 화면) ────── */
-    .thumb-card {
+    .music-player-card {
       width: 100%;
       max-width: 440px;
       background: var(--card);
@@ -298,82 +292,71 @@
       margin-bottom: 20px;
     }
 
-    .thumb-container {
+    .music-player {
       width: 100%;
       aspect-ratio: 16 / 9;
       position: relative;
       background: #000;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
 
-    .thumb-bg {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      filter: blur(20px) brightness(0.3);
-      transform: scale(1.1);
+    .thumbnail-img {
+      max-width: 60%;
+      max-height: 60%;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      object-fit: cover;
     }
 
-    .thumb-content {
+    .play-overlay {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 1;
+      background: rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .play-overlay:hover {
+      background: rgba(0,0,0,0.6);
     }
 
-    .play-icon {
-      width: 64px;
-      height: 64px;
-      background: rgba(255,255,255,0.15);
+    .play-btn-large {
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.2);
       backdrop-filter: blur(10px);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      border: 3px solid rgba(255,255,255,0.4);
       transition: transform 0.2s, background 0.2s;
-      border: 2px solid rgba(255,255,255,0.3);
     }
-    .thumb-container:hover .play-icon {
+    .play-overlay:hover .play-btn-large {
       transform: scale(1.1);
-      background: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.3);
     }
 
-    .play-icon svg {
-      width: 28px;
-      height: 28px;
+    .play-btn-large svg {
+      width: 36px;
+      height: 36px;
       fill: #fff;
-      margin-left: 4px;
+      margin-left: 6px;
     }
 
-    .click-hint {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.7);
-      font-weight: 600;
-    }
-
-    /* YouTube iframe (숨김 상태로 시작) */
-    .youtube-player {
+    .hidden-audio {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
+      width: 1px;
+      height: 1px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .youtube-player.playing {
-      opacity: 1;
-      pointer-events: all;
     }
 
-    /* ────── ANSWER BUTTONS ────── */
     .answer-btns {
       width: 100%;
       max-width: 440px;
@@ -405,7 +388,6 @@
     .btn-ai   { background: var(--ai-grad); }
     .btn-real { background: var(--real-grad); }
 
-    /* ────── FEEDBACK OVERLAY ────── */
     .feedback-overlay {
       display: none;
       position: fixed;
@@ -449,7 +431,6 @@
     .feedback-detail  { font-size: 0.82rem; color: var(--text-dim); }
     .feedback-channel { font-size: 0.75rem; color: var(--text-dim); margin-top: 6px; opacity: 0.6; }
 
-    /* ────── RESULT ────── */
     #result { gap: 28px; text-align: center; }
 
     .result-title {
@@ -503,7 +484,6 @@
     .result-btn.primary   { background: var(--accent); color: var(--bg); }
     .result-btn.secondary { background: transparent; border: 1px solid var(--card-border); color: var(--text-dim); }
 
-    /* ────── MOBILE ────── */
     @media (max-width: 480px) {
       .home-title { font-size: 2.2rem; }
       .result-score { font-size: 5rem; }
@@ -513,7 +493,6 @@
 </head>
 <body>
 
-<!-- ════ HOME ════ -->
 <div id="home" class="screen active">
   <div class="home-badge">🎤 한국 인디 음악</div>
   <h1 class="home-title">AI 커버일까요?<br/>원곡일까요?</h1>
@@ -521,14 +500,12 @@
   <button class="btn-start" onclick="showScreen('levelSelect')">시작하기</button>
 </div>
 
-<!-- ════ LEVEL SELECT ════ -->
 <div id="levelSelect" class="screen">
   <h2 class="level-title">레벨 선택</h2>
   <div class="level-grid" id="levelGrid"></div>
   <button class="btn-back" onclick="showScreen('home')">← 홈으로</button>
 </div>
 
-<!-- ════ LOADING ════ -->
 <div id="loading" class="screen">
   <div class="loader-ring" id="loaderRing"></div>
   <p class="loading-progress" id="loadingProgress">준비 중...</p>
@@ -540,7 +517,6 @@
   </div>
 </div>
 
-<!-- ════ GAME ════ -->
 <div id="game" class="screen">
   <div class="game-top-bar">
     <button class="btn-game-back" onclick="goBack()">
@@ -557,21 +533,15 @@
     <div class="progress-bar" id="progressBar" style="width:10%"></div>
   </div>
 
-  <div class="thumb-card">
-    <div class="thumb-container" id="thumbContainer" onclick="playVideo()">
-      <!-- 배경 blur 썸네일 -->
-      <div class="thumb-bg" id="thumbBg"></div>
-      
-      <!-- Play 버튼 -->
-      <div class="thumb-content" id="thumbContent">
-        <div class="play-icon">
+  <div class="music-player-card">
+    <div class="music-player">
+      <img id="thumbnailImg" class="thumbnail-img" src="" alt="앨범 커버" />
+      <div class="play-overlay" id="playOverlay" onclick="playMusic()">
+        <div class="play-btn-large">
           <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
         </div>
-        <div class="click-hint">클릭하여 음악 듣기</div>
       </div>
-
-      <!-- YouTube iframe (숨김) -->
-      <iframe id="gameIframe" class="youtube-player" src="" title="YouTube video"
+      <iframe id="gameIframe" class="hidden-audio" src="" title="YouTube audio"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen></iframe>
     </div>
@@ -587,7 +557,6 @@
   </div>
 </div>
 
-<!-- ════ FEEDBACK OVERLAY ════ -->
 <div class="feedback-overlay" id="feedbackOverlay">
   <div class="feedback-card" id="feedbackCard">
     <div class="feedback-emoji" id="feedbackEmoji"></div>
@@ -597,7 +566,6 @@
   </div>
 </div>
 
-<!-- ════ RESULT ════ -->
 <div id="result" class="screen">
   <p class="result-title" id="resultLevel">레벨 1 완료!</p>
   <div class="result-card">
@@ -612,80 +580,31 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════
 const YOUTUBE_API_KEY = 'AIzaSyC5N0g90xO7s3U3jMXoo8j1BB9PFLkwhOI';
 
-// ═══════════════════════════════════════════
-// 레벨 설정 (3단계)
-//
-// 핵심 전략:
-//   - AI 커버 vs 공식 음원
-//   - 멜론 탑100 제외 (비주류 음악)
-//   - 아이돌 제외 (인디/싱어송라이터 중심)
-// ═══════════════════════════════════════════
 const LEVELS = [
   {
     name: '인디 음악',
     diff: '🎸',
-    // 레벨 1: 인디 음악
-    real: [
-      '한국 인디 음악 공식 음원',
-      'korean indie official audio',
-      '인디 싱어송라이터 음원'
-    ],
-    ai: [
-      'AI cover 한국 인디',
-      'AI 커버 인디 음악',
-      'AI generated korean indie cover'
-    ]
+    real: ['한국 인디 음악 공식 음원', 'korean indie official audio', '인디 싱어송라이터 음원'],
+    ai: ['AI cover 한국 인디', 'AI 커버 인디 음악', 'AI generated korean indie cover']
   },
   {
     name: '싱어송라이터',
     diff: '🎹',
-    // 레벨 2: 싱어송라이터
-    real: [
-      '한국 싱어송라이터 공식 음원',
-      'korean singer songwriter official',
-      '어쿠스틱 싱어송라이터 음원'
-    ],
-    ai: [
-      'AI cover 싱어송라이터',
-      'AI 커버 어쿠스틱',
-      'AI korean singer songwriter cover'
-    ]
+    real: ['한국 싱어송라이터 공식 음원', 'korean singer songwriter official', '어쿠스틱 싱어송라이터 음원'],
+    ai: ['AI cover 싱어송라이터', 'AI 커버 어쿠스틱', 'AI korean singer songwriter cover']
   },
   {
     name: '감성 발라드',
     diff: '💙',
-    // 레벨 3: 감성 발라드 (비주류)
-    real: [
-      '언더그라운드 발라드 공식 음원',
-      'korean underground ballad official',
-      '인디 발라드 음원'
-    ],
-    ai: [
-      'AI cover 발라드 인디',
-      'AI 커버 언더그라운드 발라드',
-      'AI korean ballad indie cover'
-    ]
+    real: ['언더그라운드 발라드 공식 음원', 'korean underground ballad official', '인디 발라드 음원'],
+    ai: ['AI cover 발라드 인디', 'AI 커버 언더그라운드 발라드', 'AI korean ballad indie cover']
   }
 ];
 
-// ═══════════════════════════════════════════
-// 상태
-// ═══════════════════════════════════════════
-let currentLevel  = 0;
-let currentQ      = 0;
-let score         = 0;
-let videos        = [];
-let feedbackTimer = null;
-let isPlaying     = false;
+let currentLevel = 0, currentQ = 0, score = 0, videos = [], feedbackTimer = null, isPlaying = false;
 
-// ═══════════════════════════════════════════
-// 레벨 카드 생성
-// ═══════════════════════════════════════════
 (function buildLevelGrid() {
   const grid = document.getElementById('levelGrid');
   LEVELS.forEach((lv, i) => {
@@ -700,189 +619,101 @@ let isPlaying     = false;
   });
 })();
 
-// ═══════════════════════════════════════════
-// 화면 전환
-// ═══════════════════════════════════════════
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// ═══════════════════════════════════════════
-// 뒤로가기
-// ═══════════════════════════════════════════
 function goBack() {
-  if (feedbackTimer) {
-    clearTimeout(feedbackTimer);
-    feedbackTimer = null;
-  }
+  if (feedbackTimer) { clearTimeout(feedbackTimer); feedbackTimer = null; }
   document.getElementById('feedbackOverlay').classList.remove('active');
   document.getElementById('gameIframe').src = '';
   isPlaying = false;
   showScreen('levelSelect');
 }
 
-// ═══════════════════════════════════════════
-// YouTube API 검색
-// ═══════════════════════════════════════════
 async function searchYoutube(query, isAI) {
-  const after  = '2024-01-01T00:00:00Z';
-  const before = '2025-12-31T23:59:59Z';
-
-  const url =
-    `https://www.googleapis.com/youtube/v3/search` +
-    `?part=snippet` +
-    `&q=${encodeURIComponent(query)}` +
-    `&type=video` +
-    `&videoCategoryId=10` +          // 음악 카테고리
-    `&relevanceLanguage=ko` +         // 한국어 우선
-    `&publishedAfter=${after}` +
-    `&publishedBefore=${before}` +
-    `&maxResults=5` +
-    `&order=relevance` +
-    `&key=${YOUTUBE_API_KEY}`;
-
-  const res  = await fetch(url);
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&videoDuration=medium&relevanceLanguage=ko&publishedAfter=2024-01-01T00:00:00Z&publishedBefore=2025-12-31T23:59:59Z&maxResults=5&order=relevance&key=${YOUTUBE_API_KEY}`;
+  const res = await fetch(url);
   const data = await res.json();
-
   if (data.error) throw new Error(data.error.message);
-
   return (data.items || []).map(item => ({
-    videoId:      item.id.videoId,
-    title:        item.snippet.title,
+    videoId: item.id.videoId,
+    title: item.snippet.title,
     channelTitle: item.snippet.channelTitle,
-    thumbnail:    item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
-    isAI:         isAI
+    thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
+    isAI: isAI
   }));
 }
 
-// ═══════════════════════════════════════════
-// 레벨 시작
-// ═══════════════════════════════════════════
 async function startLevel(lvIndex) {
-  currentLevel = lvIndex;
-  currentQ     = 0;
-  score        = 0;
-  videos       = [];
-
+  currentLevel = lvIndex; currentQ = 0; score = 0; videos = [];
   showScreen('loading');
-  document.getElementById('loaderRing').style.display   = 'block';
-  document.getElementById('errorBox').style.display     = 'none';
+  document.getElementById('loaderRing').style.display = 'block';
+  document.getElementById('errorBox').style.display = 'none';
   document.getElementById('loadingProgress').textContent = '준비 중...';
-
   try {
     const lv = LEVELS[lvIndex];
-
     document.getElementById('loadingProgress').textContent = '원곡 검색 중...';
     let realVideos = [];
-    for (const q of lv.real) {
-      realVideos.push(...await searchYoutube(q, false));
-      await delay(400);
-    }
-
+    for (const q of lv.real) { realVideos.push(...await searchYoutube(q, false)); await delay(400); }
     document.getElementById('loadingProgress').textContent = 'AI 커버 검색 중...';
     let aiVideos = [];
-    for (const q of lv.ai) {
-      aiVideos.push(...await searchYoutube(q, true));
-      await delay(400);
-    }
-
-    shuffle(realVideos);
-    shuffle(aiVideos);
+    for (const q of lv.ai) { aiVideos.push(...await searchYoutube(q, true)); await delay(400); }
+    shuffle(realVideos); shuffle(aiVideos);
     const picked = realVideos.slice(0, 5).concat(aiVideos.slice(0, 5));
-
-    if (picked.length < 10) {
-      throw new Error('노래를 충분히 찾지 못했습니다.\nAPI 키를 확인하고 다시 시도해주세요.');
-    }
-
-    shuffle(picked);
-    videos = picked;
-
+    if (picked.length < 10) throw new Error('노래를 충분히 찾지 못했습니다.\nAPI 키를 확인하고 다시 시도해주세요.');
+    shuffle(picked); videos = picked;
     document.getElementById('loadingProgress').textContent = '준비 완료!';
-    await delay(600);
-    renderGame();
-    showScreen('game');
-
+    await delay(600); renderGame(); showScreen('game');
   } catch (err) {
     console.error(err);
-    document.getElementById('loaderRing').style.display  = 'none';
-    document.getElementById('errorBox').style.display    = 'block';
-    document.getElementById('errorMsg').textContent      = err.message || '오류가 발생했습니다.';
+    document.getElementById('loaderRing').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'block';
+    document.getElementById('errorMsg').textContent = err.message || '오류가 발생했습니다.';
   }
 }
 
-// ═══════════════════════════════════════════
-// 게임 렌더
-// ═══════════════════════════════════════════
 function renderGame() {
   const v = videos[currentQ];
-
-  document.getElementById('gameLevel').textContent    = `레벨 ${currentLevel + 1}`;
+  document.getElementById('gameLevel').textContent = `레벨 ${currentLevel + 1}`;
   document.getElementById('gameProgress').textContent = `${currentQ + 1} / 10`;
-  document.getElementById('progressBar').style.width  = `${((currentQ + 1) / 10) * 100}%`;
-
-  // 썸네일 배경 설정
-  document.getElementById('thumbBg').style.backgroundImage = `url(${v.thumbnail})`;
-
-  // iframe src 설정 (아직 재생 안 함)
+  document.getElementById('progressBar').style.width = `${((currentQ + 1) / 10) * 100}%`;
+  document.getElementById('thumbnailImg').src = v.thumbnail;
   const iframe = document.getElementById('gameIframe');
-  iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&controls=1`;
-  iframe.classList.remove('playing');
-
-  // Play 버튼 다시 표시
-  document.getElementById('thumbContent').style.display = 'flex';
+  iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&controls=0`;
+  document.getElementById('playOverlay').style.display = 'flex';
   isPlaying = false;
-
-  document.getElementById('btnAI').disabled   = false;
+  document.getElementById('btnAI').disabled = false;
   document.getElementById('btnReal').disabled = false;
 }
 
-// ═══════════════════════════════════════════
-// 영상 재생
-// ═══════════════════════════════════════════
-function playVideo() {
+function playMusic() {
   if (isPlaying) return;
-  
   isPlaying = true;
-  document.getElementById('thumbContent').style.display = 'none';
-  document.getElementById('gameIframe').classList.add('playing');
+  document.getElementById('playOverlay').style.display = 'none';
 }
 
-// ═══════════════════════════════════════════
-// 정답 처리
-// ═══════════════════════════════════════════
 function answer(userSaidAI) {
-  document.getElementById('btnAI').disabled   = true;
+  document.getElementById('btnAI').disabled = true;
   document.getElementById('btnReal').disabled = true;
-
-  const v       = videos[currentQ];
+  const v = videos[currentQ];
   const correct = (userSaidAI === v.isAI);
   if (correct) score++;
-
   const card = document.getElementById('feedbackCard');
   card.className = 'feedback-card ' + (correct ? 'correct' : 'wrong');
-  document.getElementById('feedbackEmoji').textContent  = correct ? '🎉' : '😢';
-  document.getElementById('feedbackTitle').textContent  = correct ? '정답!' : '오답!';
+  document.getElementById('feedbackEmoji').textContent = correct ? '🎉' : '😢';
+  document.getElementById('feedbackTitle').textContent = correct ? '정답!' : '오답!';
   document.getElementById('feedbackDetail').textContent = v.isAI ? '🤖 AI 커버입니다' : '🎤 원곡입니다';
   document.getElementById('feedbackChannel').textContent = `출처: ${v.channelTitle}`;
-
   document.getElementById('feedbackOverlay').classList.add('active');
-
   feedbackTimer = setTimeout(() => {
     document.getElementById('feedbackOverlay').classList.remove('active');
-    feedbackTimer = null;
-    currentQ++;
-    if (currentQ >= 10) {
-      showResult();
-    } else {
-      renderGame();
-    }
+    feedbackTimer = null; currentQ++;
+    if (currentQ >= 10) showResult(); else renderGame();
   }, 2000);
 }
 
-// ═══════════════════════════════════════════
-// 결과
-// ═══════════════════════════════════════════
 function showResult() {
   document.getElementById('gameIframe').src = '';
   document.getElementById('resultLevel').textContent = `레벨 ${currentLevel + 1} 완료!`;
@@ -891,9 +722,6 @@ function showResult() {
   showScreen('result');
 }
 
-// ═══════════════════════════════════════════
-// 유틸
-// ═══════════════════════════════════════════
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -905,3 +733,4 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
 </html>
+
