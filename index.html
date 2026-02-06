@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🎤 AI 노래일까요? 실제일까요?</title>
+  <title>🎤 AI 커버일까요? 원곡일까요?</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -78,7 +78,7 @@
 
     .home-title {
       font-family: 'Syne', sans-serif;
-      font-size: 2.8rem;
+      font-size: 2.6rem;
       font-weight: 800;
       line-height: 1.1;
       margin-bottom: 18px;
@@ -88,10 +88,10 @@
     }
 
     .home-desc {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--text-dim);
       line-height: 1.7;
-      max-width: 340px;
+      max-width: 360px;
       margin: 0 auto 40px;
     }
 
@@ -287,8 +287,8 @@
       transition: width 0.4s ease;
     }
 
-    /* ────── VIDEO EMBED ────── */
-    .video-card {
+    /* ────── THUMBNAIL CARD (검은 화면) ────── */
+    .thumb-card {
       width: 100%;
       max-width: 440px;
       background: var(--card);
@@ -298,19 +298,79 @@
       margin-bottom: 20px;
     }
 
-    .video-embed-wrap {
+    .thumb-container {
       width: 100%;
       aspect-ratio: 16 / 9;
       position: relative;
       background: #000;
+      cursor: pointer;
+      overflow: hidden;
     }
 
-    .video-embed-wrap iframe {
+    .thumb-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(20px) brightness(0.3);
+      transform: scale(1.1);
+    }
+
+    .thumb-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    .play-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .thumb-container:hover .play-icon {
+      transform: scale(1.1);
+      background: rgba(255,255,255,0.25);
+    }
+
+    .play-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: #fff;
+      margin-left: 4px;
+    }
+
+    .click-hint {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+    }
+
+    /* YouTube iframe (숨김 상태로 시작) */
+    .youtube-player {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       border: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .youtube-player.playing {
+      opacity: 1;
+      pointer-events: all;
     }
 
     /* ────── ANSWER BUTTONS ────── */
@@ -455,9 +515,9 @@
 
 <!-- ════ HOME ════ -->
 <div id="home" class="screen active">
-  <div class="home-badge">🎤 한국어 노래</div>
-  <h1 class="home-title">AI 노래일까요?<br/>실제일까요?</h1>
-  <p class="home-desc">한국어 노래를 듣고<br/>AI가 부른 곡인지<br/>실제 가수가 부른 곡인지<br/>맞춰보세요!<br/><br/>🎵 K-pop · 💙 발라드 · 🎸 인디</p>
+  <div class="home-badge">🎤 한국 인디 음악</div>
+  <h1 class="home-title">AI 커버일까요?<br/>원곡일까요?</h1>
+  <p class="home-desc">한국어 노래를 듣고<br/>AI 커버곡인지 원곡인지<br/>맞춰보세요!<br/><br/>🎸 인디 · 🎹 싱어송라이터 · 💙 감성</p>
   <button class="btn-start" onclick="showScreen('levelSelect')">시작하기</button>
 </div>
 
@@ -497,9 +557,21 @@
     <div class="progress-bar" id="progressBar" style="width:10%"></div>
   </div>
 
-  <div class="video-card">
-    <div class="video-embed-wrap">
-      <iframe id="gameIframe" src="" title="YouTube video"
+  <div class="thumb-card">
+    <div class="thumb-container" id="thumbContainer" onclick="playVideo()">
+      <!-- 배경 blur 썸네일 -->
+      <div class="thumb-bg" id="thumbBg"></div>
+      
+      <!-- Play 버튼 -->
+      <div class="thumb-content" id="thumbContent">
+        <div class="play-icon">
+          <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        </div>
+        <div class="click-hint">클릭하여 음악 듣기</div>
+      </div>
+
+      <!-- YouTube iframe (숨김) -->
+      <iframe id="gameIframe" class="youtube-player" src="" title="YouTube video"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen></iframe>
     </div>
@@ -510,7 +582,7 @@
       <span class="btn-icon">🤖</span> AI 커버
     </button>
     <button class="answer-btn btn-real" id="btnReal" onclick="answer(false)">
-      <span class="btn-icon">🎤</span> 실제 가수
+      <span class="btn-icon">🎤</span> 원곡
     </button>
   </div>
 </div>
@@ -549,55 +621,54 @@ const YOUTUBE_API_KEY = 'AIzaSyC5N0g90xO7s3U3jMXoo8j1BB9PFLkwhOI';
 // 레벨 설정 (3단계)
 //
 // 핵심 전략:
-//   - 한국어 노래 (사람 목소리)
-//   - 레벨 1: K-pop (대중적)
-//   - 레벨 2: 발라드 (감성적)
-//   - 레벨 3: 인디/어쿠스틱 (가장 어려움)
+//   - AI 커버 vs 공식 음원
+//   - 멜론 탑100 제외 (비주류 음악)
+//   - 아이돌 제외 (인디/싱어송라이터 중심)
 // ═══════════════════════════════════════════
 const LEVELS = [
   {
-    name: 'K-pop',
-    diff: '🎵',
-    // 레벨 1: K-pop
-    real: [
-      'kpop 2024 한국어',
-      '케이팝 노래 2024',
-      'korean pop song 2024'
-    ],
-    ai: [
-      'AI kpop cover 한국어',
-      'AI 케이팝 커버 2024',
-      'AI generated kpop korean'
-    ]
-  },
-  {
-    name: '발라드',
-    diff: '💙',
-    // 레벨 2: 발라드
-    real: [
-      '한국 발라드 2024',
-      'korean ballad 2024',
-      '감성 발라드 노래 2024'
-    ],
-    ai: [
-      'AI 발라드 커버',
-      'AI korean ballad cover',
-      'AI generated korean ballad'
-    ]
-  },
-  {
-    name: '인디/어쿠스틱',
+    name: '인디 음악',
     diff: '🎸',
-    // 레벨 3: 인디/어쿠스틱 (가장 어려움)
+    // 레벨 1: 인디 음악
     real: [
-      '한국 인디 음악 2024',
-      'korean indie song 2024',
-      '어쿠스틱 한국어 노래 2024'
+      '한국 인디 음악 공식 음원',
+      'korean indie official audio',
+      '인디 싱어송라이터 음원'
     ],
     ai: [
-      'AI 인디 커버 한국어',
-      'AI korean indie cover',
-      'AI generated korean acoustic'
+      'AI cover 한국 인디',
+      'AI 커버 인디 음악',
+      'AI generated korean indie cover'
+    ]
+  },
+  {
+    name: '싱어송라이터',
+    diff: '🎹',
+    // 레벨 2: 싱어송라이터
+    real: [
+      '한국 싱어송라이터 공식 음원',
+      'korean singer songwriter official',
+      '어쿠스틱 싱어송라이터 음원'
+    ],
+    ai: [
+      'AI cover 싱어송라이터',
+      'AI 커버 어쿠스틱',
+      'AI korean singer songwriter cover'
+    ]
+  },
+  {
+    name: '감성 발라드',
+    diff: '💙',
+    // 레벨 3: 감성 발라드 (비주류)
+    real: [
+      '언더그라운드 발라드 공식 음원',
+      'korean underground ballad official',
+      '인디 발라드 음원'
+    ],
+    ai: [
+      'AI cover 발라드 인디',
+      'AI 커버 언더그라운드 발라드',
+      'AI korean ballad indie cover'
     ]
   }
 ];
@@ -610,6 +681,7 @@ let currentQ      = 0;
 let score         = 0;
 let videos        = [];
 let feedbackTimer = null;
+let isPlaying     = false;
 
 // ═══════════════════════════════════════════
 // 레벨 카드 생성
@@ -646,6 +718,7 @@ function goBack() {
   }
   document.getElementById('feedbackOverlay').classList.remove('active');
   document.getElementById('gameIframe').src = '';
+  isPlaying = false;
   showScreen('levelSelect');
 }
 
@@ -678,6 +751,7 @@ async function searchYoutube(query, isAI) {
     videoId:      item.id.videoId,
     title:        item.snippet.title,
     channelTitle: item.snippet.channelTitle,
+    thumbnail:    item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
     isAI:         isAI
   }));
 }
@@ -699,7 +773,7 @@ async function startLevel(lvIndex) {
   try {
     const lv = LEVELS[lvIndex];
 
-    document.getElementById('loadingProgress').textContent = '실제 노래 검색 중...';
+    document.getElementById('loadingProgress').textContent = '원곡 검색 중...';
     let realVideos = [];
     for (const q of lv.real) {
       realVideos.push(...await searchYoutube(q, false));
@@ -747,13 +821,31 @@ function renderGame() {
   document.getElementById('gameProgress').textContent = `${currentQ + 1} / 10`;
   document.getElementById('progressBar').style.width  = `${((currentQ + 1) / 10) * 100}%`;
 
+  // 썸네일 배경 설정
+  document.getElementById('thumbBg').style.backgroundImage = `url(${v.thumbnail})`;
+
+  // iframe src 설정 (아직 재생 안 함)
   const iframe = document.getElementById('gameIframe');
-  iframe.src = '';
-  void iframe.offsetWidth;
   iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&controls=1`;
+  iframe.classList.remove('playing');
+
+  // Play 버튼 다시 표시
+  document.getElementById('thumbContent').style.display = 'flex';
+  isPlaying = false;
 
   document.getElementById('btnAI').disabled   = false;
   document.getElementById('btnReal').disabled = false;
+}
+
+// ═══════════════════════════════════════════
+// 영상 재생
+// ═══════════════════════════════════════════
+function playVideo() {
+  if (isPlaying) return;
+  
+  isPlaying = true;
+  document.getElementById('thumbContent').style.display = 'none';
+  document.getElementById('gameIframe').classList.add('playing');
 }
 
 // ═══════════════════════════════════════════
@@ -771,7 +863,7 @@ function answer(userSaidAI) {
   card.className = 'feedback-card ' + (correct ? 'correct' : 'wrong');
   document.getElementById('feedbackEmoji').textContent  = correct ? '🎉' : '😢';
   document.getElementById('feedbackTitle').textContent  = correct ? '정답!' : '오답!';
-  document.getElementById('feedbackDetail').textContent = v.isAI ? '🤖 AI 커버입니다' : '🎤 실제 가수 노래입니다';
+  document.getElementById('feedbackDetail').textContent = v.isAI ? '🤖 AI 커버입니다' : '🎤 원곡입니다';
   document.getElementById('feedbackChannel').textContent = `출처: ${v.channelTitle}`;
 
   document.getElementById('feedbackOverlay').classList.add('active');
@@ -813,6 +905,3 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
 </html>
-
-
-
