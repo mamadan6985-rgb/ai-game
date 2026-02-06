@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🤖 AI일까요? 실제일까요?</title>
+  <title>🎤 AI 노래일까요? 실제일까요?</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -78,7 +78,7 @@
 
     .home-title {
       font-family: 'Syne', sans-serif;
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 800;
       line-height: 1.1;
       margin-bottom: 18px;
@@ -91,7 +91,7 @@
       font-size: 1rem;
       color: var(--text-dim);
       line-height: 1.7;
-      max-width: 320px;
+      max-width: 340px;
       margin: 0 auto 40px;
     }
 
@@ -300,7 +300,7 @@
 
     .video-embed-wrap {
       width: 100%;
-      aspect-ratio: 9 / 16;
+      aspect-ratio: 16 / 9;
       position: relative;
       background: #000;
     }
@@ -445,7 +445,7 @@
 
     /* ────── MOBILE ────── */
     @media (max-width: 480px) {
-      .home-title { font-size: 2.4rem; }
+      .home-title { font-size: 2.2rem; }
       .result-score { font-size: 5rem; }
       .screen { padding: 32px 18px; }
     }
@@ -455,9 +455,9 @@
 
 <!-- ════ HOME ════ -->
 <div id="home" class="screen active">
-  <div class="home-badge">🎬 YouTube Shorts 기반</div>
-  <h1 class="home-title">AI일까요?<br/>실제일까요?</h1>
-  <p class="home-desc">영상을 보고<br/>AI가 만든 것인지<br/>실제 촬영인지 맞춰보세요!<br/><br/>🍔 음식 · 🌲 자연 · 🐱 동물</p>
+  <div class="home-badge">🎤 한국어 노래</div>
+  <h1 class="home-title">AI 노래일까요?<br/>실제일까요?</h1>
+  <p class="home-desc">한국어 노래를 듣고<br/>AI가 부른 곡인지<br/>실제 가수가 부른 곡인지<br/>맞춰보세요!<br/><br/>🎵 K-pop · 💙 발라드 · 🎸 인디</p>
   <button class="btn-start" onclick="showScreen('levelSelect')">시작하기</button>
 </div>
 
@@ -472,7 +472,7 @@
 <div id="loading" class="screen">
   <div class="loader-ring" id="loaderRing"></div>
   <p class="loading-progress" id="loadingProgress">준비 중...</p>
-  <p class="loading-text">영상을 가져오는 중</p>
+  <p class="loading-text">노래를 가져오는 중</p>
   <div class="error-box" id="errorBox" style="display:none;">
     <div class="error-icon">⚠️</div>
     <p class="error-msg" id="errorMsg"></p>
@@ -507,10 +507,10 @@
 
   <div class="answer-btns">
     <button class="answer-btn btn-ai" id="btnAI" onclick="answer(true)">
-      <span class="btn-icon">🤖</span> AI입니다
+      <span class="btn-icon">🤖</span> AI 커버
     </button>
     <button class="answer-btn btn-real" id="btnReal" onclick="answer(false)">
-      <span class="btn-icon">📷</span> 실제입니다
+      <span class="btn-icon">🎤</span> 실제 가수
     </button>
   </div>
 </div>
@@ -549,55 +549,55 @@ const YOUTUBE_API_KEY = 'AIzaSyC5N0g90xO7s3U3jMXoo8j1BB9PFLkwhOI';
 // 레벨 설정 (3단계)
 //
 // 핵심 전략:
-//   - AI가 가장 잘하는 장르: 음식, 자연, 동물
-//   - 실사기반 AI 영상 키워드만 사용
-//   - YouTube Shorts embed로 가져옴
-//   - 레벨별로 장르 혼합 비율 조정
+//   - 한국어 노래 (사람 목소리)
+//   - 레벨 1: K-pop (대중적)
+//   - 레벨 2: 발라드 (감성적)
+//   - 레벨 3: 인디/어쿠스틱 (가장 어려움)
 // ═══════════════════════════════════════════
 const LEVELS = [
   {
-    name: '도전해보세요',
-    diff: '⭐',
-    // 레벨 1: 음식 위주 (AI가 가장 완벽한 장르)
+    name: 'K-pop',
+    diff: '🎵',
+    // 레벨 1: K-pop
     real: [
-      'food aesthetic close up shorts 2024',
-      'satisfying food compilation 4K shorts',
-      'food photography cinematic shorts 2024'
+      'kpop 2024 한국어',
+      '케이팝 노래 2024',
+      'korean pop song 2024'
     ],
     ai: [
-      'AI generated food photorealistic 2024',
-      'hyperrealistic AI food video shorts',
-      'AI food realistic indistinguishable 2024'
+      'AI kpop cover 한국어',
+      'AI 케이팝 커버 2024',
+      'AI generated kpop korean'
     ]
   },
   {
-    name: '눈 속임수',
-    diff: '⭐⭐',
-    // 레벨 2: 자연 풍경 (AI가 완벽한 장르)
+    name: '발라드',
+    diff: '💙',
+    // 레벨 2: 발라드
     real: [
-      'nature cinematic 4K shorts 2024',
-      'landscape aesthetic drone footage shorts',
-      'nature satisfying video shorts 2025'
+      '한국 발라드 2024',
+      'korean ballad 2024',
+      '감성 발라드 노래 2024'
     ],
     ai: [
-      'photorealistic AI generated nature video 2024',
-      'AI landscape cinematic indistinguishable shorts',
-      'hyperrealistic AI nature footage 2024'
+      'AI 발라드 커버',
+      'AI korean ballad cover',
+      'AI generated korean ballad'
     ]
   },
   {
-    name: '거의 불가능',
-    diff: '⭐⭐⭐',
-    // 레벨 3: 동물 + 혼합 (가장 어려운 조합)
+    name: '인디/어쿠스틱',
+    diff: '🎸',
+    // 레벨 3: 인디/어쿠스틱 (가장 어려움)
     real: [
-      'cute animal cinematic 4K shorts 2024',
-      'animal aesthetic video shorts 2025',
-      'satisfying nature animal shorts 2024'
+      '한국 인디 음악 2024',
+      'korean indie song 2024',
+      '어쿠스틱 한국어 노래 2024'
     ],
     ai: [
-      'photorealistic AI generated animal video 2024',
-      'AI animal realistic impossible to tell shorts',
-      'hyperrealistic AI creature footage 2025'
+      'AI 인디 커버 한국어',
+      'AI korean indie cover',
+      'AI generated korean acoustic'
     ]
   }
 ];
@@ -621,8 +621,8 @@ let feedbackTimer = null;
       <div class="level-card" onclick="startLevel(${i})">
         <div class="level-num">${i + 1}</div>
         <div class="level-info">
-          <div class="level-name">레벨 ${i + 1} — ${lv.name}</div>
-          <div class="level-diff">${lv.diff} 난이도</div>
+          <div class="level-name">${lv.diff} ${lv.name}</div>
+          <div class="level-diff">레벨 ${i + 1}</div>
         </div>
       </div>`;
   });
@@ -661,7 +661,8 @@ async function searchYoutube(query, isAI) {
     `?part=snippet` +
     `&q=${encodeURIComponent(query)}` +
     `&type=video` +
-    `&videoDuration=short` +
+    `&videoCategoryId=10` +          // 음악 카테고리
+    `&relevanceLanguage=ko` +         // 한국어 우선
     `&publishedAfter=${after}` +
     `&publishedBefore=${before}` +
     `&maxResults=5` +
@@ -698,14 +699,14 @@ async function startLevel(lvIndex) {
   try {
     const lv = LEVELS[lvIndex];
 
-    document.getElementById('loadingProgress').textContent = '실제 영상 검색 중...';
+    document.getElementById('loadingProgress').textContent = '실제 노래 검색 중...';
     let realVideos = [];
     for (const q of lv.real) {
       realVideos.push(...await searchYoutube(q, false));
       await delay(400);
     }
 
-    document.getElementById('loadingProgress').textContent = 'AI 영상 검색 중...';
+    document.getElementById('loadingProgress').textContent = 'AI 커버 검색 중...';
     let aiVideos = [];
     for (const q of lv.ai) {
       aiVideos.push(...await searchYoutube(q, true));
@@ -717,7 +718,7 @@ async function startLevel(lvIndex) {
     const picked = realVideos.slice(0, 5).concat(aiVideos.slice(0, 5));
 
     if (picked.length < 10) {
-      throw new Error('영상을 충분히 찾지 못했습니다.\nAPI 키를 확인하고 다시 시도해주세요.');
+      throw new Error('노래를 충분히 찾지 못했습니다.\nAPI 키를 확인하고 다시 시도해주세요.');
     }
 
     shuffle(picked);
@@ -749,7 +750,7 @@ function renderGame() {
   const iframe = document.getElementById('gameIframe');
   iframe.src = '';
   void iframe.offsetWidth;
-  iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&mute=1&loop=1&playlist=${v.videoId}&controls=1`;
+  iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&controls=1`;
 
   document.getElementById('btnAI').disabled   = false;
   document.getElementById('btnReal').disabled = false;
@@ -770,7 +771,7 @@ function answer(userSaidAI) {
   card.className = 'feedback-card ' + (correct ? 'correct' : 'wrong');
   document.getElementById('feedbackEmoji').textContent  = correct ? '🎉' : '😢';
   document.getElementById('feedbackTitle').textContent  = correct ? '정답!' : '오답!';
-  document.getElementById('feedbackDetail').textContent = v.isAI ? '🤖 AI 생성 영상입니다' : '📷 실제 촬영 영상입니다';
+  document.getElementById('feedbackDetail').textContent = v.isAI ? '🤖 AI 커버입니다' : '🎤 실제 가수 노래입니다';
   document.getElementById('feedbackChannel').textContent = `출처: ${v.channelTitle}`;
 
   document.getElementById('feedbackOverlay').classList.add('active');
@@ -812,5 +813,6 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
 </html>
+
 
 
