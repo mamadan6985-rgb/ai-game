@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>🤖 AI일까요? 실제일까요?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #14141f;
+      --card-border: #2a2a3d;
+      --accent: #c8ff00;
+      --accent2: #ff6b6b;
+      --text: #f0f0f0;
+      --text-dim: #6b6b7f;
+      --ai-grad: linear-gradient(135deg, #ff6b6b, #ff2d6b);
+      --real-grad: linear-gradient(135deg, #00e5ff, #00bcd4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ────── SCREENS ────── */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 40px 24px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.4s ease;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ────── HOME ────── */
+    #home { text-align: center; }
+
+    .home-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(200,255,0,0.08);
+      border: 1px solid rgba(200,255,0,0.25);
+      border-radius: 50px;
+      padding: 6px 16px;
+      margin-bottom: 28px;
+    }
+
+    .home-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .home-desc {
+      font-size: 1rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 320px;
+      margin: 0 auto 40px;
+    }
+
+    .btn-start {
+      display: inline-block;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      color: var(--bg);
+      background: var(--accent);
+      border: none;
+      padding: 18px 52px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 30px rgba(200,255,0,0.25);
+    }
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(200,255,0,0.4);
+    }
+    .btn-start:active { transform: translateY(0); }
+
+    /* ────── LEVEL SELECT ────── */
+    #levelSelect { gap: 24px; }
+
+    .level-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .level-grid {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .level-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s, background 0.2s;
+      text-align: left;
+    }
+    .level-card:hover {
+      border-color: var(--accent);
+      background: rgba(200,255,0,0.04);
+      transform: translateX(4px);
+    }
+    .level-card:active { transform: translateX(2px); }
+
+    .level-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .level-info .level-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+    .level-info .level-diff {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
+    .btn-back {
+      margin-top: 8px;
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      padding: 10px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-back:hover { border-color: var(--text-dim); color: var(--text); }
+
+    /* ────── LOADING ────── */
+    #loading { gap: 24px; text-align: center; }
+
+    .loader-ring {
+      width: 56px;
+      height: 56px;
+      border: 3px solid var(--card-border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text     { font-size: 1rem; color: var(--text-dim); }
+    .loading-progress { font-size: 0.82rem; color: var(--accent); font-weight: 600; }
+
+    .error-box {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.3);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      max-width: 340px;
+    }
+    .error-box .error-icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .error-box .error-msg  { color: var(--accent2); font-size: 0.9rem; line-height: 1.5; margin-bottom: 18px; }
+
+    /* ────── GAME ────── */
+    #game {
+      justify-content: flex-start;
+      padding-top: 20px;
+      gap: 0;
+    }
+
+    .game-top-bar {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .btn-game-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-game-back:hover { border-color: var(--text-dim); color: var(--text); }
+    .btn-game-back svg { width: 12px; height: 12px; }
+
+    .game-header {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .game-header .tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(200,255,0,0.1);
+      border-radius: 50px;
+      padding: 5px 12px;
+    }
+
+    .game-header .progress {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      max-width: 440px;
+      height: 3px;
+      background: var(--card);
+      border-radius: 3px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    /* ────── VIDEO EMBED ────── */
+    .video-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .video-embed-wrap {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      position: relative;
+      background: #000;
+    }
+
+    .video-embed-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ────── ANSWER BUTTONS ────── */
+    .answer-btns {
+      width: 100%;
+      max-width: 440px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 20px 10px;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s, opacity 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .answer-btn .btn-icon { font-size: 1.4rem; }
+    .answer-btn:hover     { transform: translateY(-2px); filter: brightness(1.1); }
+    .answer-btn:active    { transform: translateY(0); }
+    .answer-btn:disabled  { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+
+    .btn-ai   { background: var(--ai-grad); }
+    .btn-real { background: var(--real-grad); }
+
+    /* ────── FEEDBACK OVERLAY ────── */
+    .feedback-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.25s ease;
+    }
+    .feedback-overlay.active { display: flex; }
+
+    .feedback-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 36px 40px;
+      text-align: center;
+      border: 1px solid var(--card-border);
+      animation: popIn 0.3s cubic-bezier(.175,.885,.32,1.275);
+      max-width: 300px;
+      width: 90%;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform: scale(0.85); }
+      to   { opacity:1; transform: scale(1); }
+    }
+
+    .feedback-card.correct { border-color: rgba(200,255,0,0.4); }
+    .feedback-card.wrong   { border-color: rgba(255,107,107,0.4); }
+
+    .feedback-emoji { font-size: 3rem; margin-bottom: 10px; }
+    .feedback-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .feedback-card.correct .feedback-title { color: var(--accent); }
+    .feedback-card.wrong   .feedback-title { color: var(--accent2); }
+
+    .feedback-detail  { font-size: 0.82rem; color: var(--text-dim); }
+    .feedback-channel { font-size: 0.75rem; color: var(--text-dim); margin-top: 6px; opacity: 0.6; }
+
+    /* ────── RESULT ────── */
+    #result { gap: 28px; text-align: center; }
+
+    .result-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 44px 40px 36px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .result-score {
+      font-family: 'Syne', sans-serif;
+      font-size: 6rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .result-out-of { font-size: 0.9rem; color: var(--text-dim); margin-top: 6px; }
+
+    .result-btns {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .result-btn {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 16px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .result-btn:hover  { transform: translateY(-2px); filter: brightness(1.1); }
+    .result-btn:active { transform: translateY(0); }
+
+    .result-btn.primary   { background: var(--accent); color: var(--bg); }
+    .result-btn.secondary { background: transparent; border: 1px solid var(--card-border); color: var(--text-dim); }
+
+    /* ────── MOBILE ────── */
+    @media (max-width: 480px) {
+      .home-title { font-size: 2.4rem; }
+      .result-score { font-size: 5rem; }
+      .screen { padding: 32px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════ HOME ════ -->
+<div id="home" class="screen active">
+  <div class="home-badge">🎬 YouTube Shorts 기반</div>
+  <h1 class="home-title">AI일까요?<br/>실제일까요?</h1>
+  <p class="home-desc">영상을 보고<br/>AI가 만든 것인지<br/>실제 촬영인지 맞춰보세요!<br/><br/>🍔 음식 · 🌲 자연 · 🐱 동물</p>
+  <button class="btn-start" onclick="showScreen('levelSelect')">시작하기</button>
+</div>
+
+<!-- ════ LEVEL SELECT ════ -->
+<div id="levelSelect" class="screen">
+  <h2 class="level-title">레벨 선택</h2>
+  <div class="level-grid" id="levelGrid"></div>
+  <button class="btn-back" onclick="showScreen('home')">← 홈으로</button>
+</div>
+
+<!-- ════ LOADING ════ -->
+<div id="loading" class="screen">
+  <div class="loader-ring" id="loaderRing"></div>
+  <p class="loading-progress" id="loadingProgress">준비 중...</p>
+  <p class="loading-text">영상을 가져오는 중</p>
+  <div class="error-box" id="errorBox" style="display:none;">
+    <div class="error-icon">⚠️</div>
+    <p class="error-msg" id="errorMsg"></p>
+    <button class="btn-back" onclick="showScreen('levelSelect')">돌아가기</button>
+  </div>
+</div>
+
+<!-- ════ GAME ════ -->
+<div id="game" class="screen">
+  <div class="game-top-bar">
+    <button class="btn-game-back" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      레벨 선택
+    </button>
+  </div>
+
+  <div class="game-header">
+    <span class="tag" id="gameLevel">레벨 1</span>
+    <span class="progress" id="gameProgress">1 / 10</span>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar" style="width:10%"></div>
+  </div>
+
+  <div class="video-card">
+    <div class="video-embed-wrap">
+      <iframe id="gameIframe" src="" title="YouTube video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <div class="answer-btns">
+    <button class="answer-btn btn-ai" id="btnAI" onclick="answer(true)">
+      <span class="btn-icon">🤖</span> AI입니다
+    </button>
+    <button class="answer-btn btn-real" id="btnReal" onclick="answer(false)">
+      <span class="btn-icon">📷</span> 실제입니다
+    </button>
+  </div>
+</div>
+
+<!-- ════ FEEDBACK OVERLAY ════ -->
+<div class="feedback-overlay" id="feedbackOverlay">
+  <div class="feedback-card" id="feedbackCard">
+    <div class="feedback-emoji" id="feedbackEmoji"></div>
+    <div class="feedback-title" id="feedbackTitle"></div>
+    <div class="feedback-detail" id="feedbackDetail"></div>
+    <div class="feedback-channel" id="feedbackChannel"></div>
+  </div>
+</div>
+
+<!-- ════ RESULT ════ -->
+<div id="result" class="screen">
+  <p class="result-title" id="resultLevel">레벨 1 완료!</p>
+  <div class="result-card">
+    <div class="result-score" id="resultScore">0</div>
+    <div class="result-out-of">/ 10 문제 정답</div>
+  </div>
+  <div class="result-btns">
+    <button class="result-btn primary" id="btnRetry">다시 도전</button>
+    <button class="result-btn secondary" onclick="showScreen('levelSelect')">레벨 선택</button>
+    <button class="result-btn secondary" onclick="showScreen('home')">홈으로</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const YOUTUBE_API_KEY = 'AIzaSyC5N0g90xO7s3U3jMXoo8j1BB9PFLkwhO';
+
+// ═══════════════════════════════════════════
+// 레벨 설정 (3단계)
+//
+// 핵심 전략:
+//   - AI가 가장 잘하는 장르: 음식, 자연, 동물
+//   - 실사기반 AI 영상 키워드만 사용
+//   - YouTube Shorts embed로 가져옴
+//   - 레벨별로 장르 혼합 비율 조정
+// ═══════════════════════════════════════════
+const LEVELS = [
+  {
+    name: '도전해보세요',
+    diff: '⭐',
+    // 레벨 1: 음식 위주 (AI가 가장 완벽한 장르)
+    real: [
+      'food aesthetic close up shorts 2024',
+      'satisfying food compilation 4K shorts',
+      'food photography cinematic shorts 2024'
+    ],
+    ai: [
+      'AI generated food photorealistic 2024',
+      'hyperrealistic AI food video shorts',
+      'AI food realistic indistinguishable 2024'
+    ]
+  },
+  {
+    name: '눈 속임수',
+    diff: '⭐⭐',
+    // 레벨 2: 자연 풍경 (AI가 완벽한 장르)
+    real: [
+      'nature cinematic 4K shorts 2024',
+      'landscape aesthetic drone footage shorts',
+      'nature satisfying video shorts 2025'
+    ],
+    ai: [
+      'photorealistic AI generated nature video 2024',
+      'AI landscape cinematic indistinguishable shorts',
+      'hyperrealistic AI nature footage 2024'
+    ]
+  },
+  {
+    name: '거의 불가능',
+    diff: '⭐⭐⭐',
+    // 레벨 3: 동물 + 혼합 (가장 어려운 조합)
+    real: [
+      'cute animal cinematic 4K shorts 2024',
+      'animal aesthetic video shorts 2025',
+      'satisfying nature animal shorts 2024'
+    ],
+    ai: [
+      'photorealistic AI generated animal video 2024',
+      'AI animal realistic impossible to tell shorts',
+      'hyperrealistic AI creature footage 2025'
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════
+// 상태
+// ═══════════════════════════════════════════
+let currentLevel  = 0;
+let currentQ      = 0;
+let score         = 0;
+let videos        = [];
+let feedbackTimer = null;
+
+// ═══════════════════════════════════════════
+// 레벨 카드 생성
+// ═══════════════════════════════════════════
+(function buildLevelGrid() {
+  const grid = document.getElementById('levelGrid');
+  LEVELS.forEach((lv, i) => {
+    grid.innerHTML += `
+      <div class="level-card" onclick="startLevel(${i})">
+        <div class="level-num">${i + 1}</div>
+        <div class="level-info">
+          <div class="level-name">레벨 ${i + 1} — ${lv.name}</div>
+          <div class="level-diff">${lv.diff} 난이도</div>
+        </div>
+      </div>`;
+  });
+})();
+
+// ═══════════════════════════════════════════
+// 화면 전환
+// ═══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+// 뒤로가기
+// ═══════════════════════════════════════════
+function goBack() {
+  if (feedbackTimer) {
+    clearTimeout(feedbackTimer);
+    feedbackTimer = null;
+  }
+  document.getElementById('feedbackOverlay').classList.remove('active');
+  document.getElementById('gameIframe').src = '';
+  showScreen('levelSelect');
+}
+
+// ═══════════════════════════════════════════
+// YouTube API 검색
+// ═══════════════════════════════════════════
+async function searchYoutube(query, isAI) {
+  const after  = '2024-01-01T00:00:00Z';
+  const before = '2025-12-31T23:59:59Z';
+
+  const url =
+    `https://www.googleapis.com/youtube/v3/search` +
+    `?part=snippet` +
+    `&q=${encodeURIComponent(query)}` +
+    `&type=video` +
+    `&videoDuration=short` +
+    `&publishedAfter=${after}` +
+    `&publishedBefore=${before}` +
+    `&maxResults=5` +
+    `&order=relevance` +
+    `&key=${YOUTUBE_API_KEY}`;
+
+  const res  = await fetch(url);
+  const data = await res.json();
+
+  if (data.error) throw new Error(data.error.message);
+
+  return (data.items || []).map(item => ({
+    videoId:      item.id.videoId,
+    title:        item.snippet.title,
+    channelTitle: item.snippet.channelTitle,
+    isAI:         isAI
+  }));
+}
+
+// ═══════════════════════════════════════════
+// 레벨 시작
+// ═══════════════════════════════════════════
+async function startLevel(lvIndex) {
+  currentLevel = lvIndex;
+  currentQ     = 0;
+  score        = 0;
+  videos       = [];
+
+  showScreen('loading');
+  document.getElementById('loaderRing').style.display   = 'block';
+  document.getElementById('errorBox').style.display     = 'none';
+  document.getElementById('loadingProgress').textContent = '준비 중...';
+
+  try {
+    const lv = LEVELS[lvIndex];
+
+    document.getElementById('loadingProgress').textContent = '실제 영상 검색 중...';
+    let realVideos = [];
+    for (const q of lv.real) {
+      realVideos.push(...await searchYoutube(q, false));
+      await delay(400);
+    }
+
+    document.getElementById('loadingProgress').textContent = 'AI 영상 검색 중...';
+    let aiVideos = [];
+    for (const q of lv.ai) {
+      aiVideos.push(...await searchYoutube(q, true));
+      await delay(400);
+    }
+
+    shuffle(realVideos);
+    shuffle(aiVideos);
+    const picked = realVideos.slice(0, 5).concat(aiVideos.slice(0, 5));
+
+    if (picked.length < 10) {
+      throw new Error('영상을 충분히 찾지 못했습니다.\nAPI 키를 확인하고 다시 시도해주세요.');
+    }
+
+    shuffle(picked);
+    videos = picked;
+
+    document.getElementById('loadingProgress').textContent = '준비 완료!';
+    await delay(600);
+    renderGame();
+    showScreen('game');
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('loaderRing').style.display  = 'none';
+    document.getElementById('errorBox').style.display    = 'block';
+    document.getElementById('errorMsg').textContent      = err.message || '오류가 발생했습니다.';
+  }
+}
+
+// ═══════════════════════════════════════════
+// 게임 렌더
+// ═══════════════════════════════════════════
+function renderGame() {
+  const v = videos[currentQ];
+
+  document.getElementById('gameLevel').textContent    = `레벨 ${currentLevel + 1}`;
+  document.getElementById('gameProgress').textContent = `${currentQ + 1} / 10`;
+  document.getElementById('progressBar').style.width  = `${((currentQ + 1) / 10) * 100}%`;
+
+  const iframe = document.getElementById('gameIframe');
+  iframe.src = '';
+  void iframe.offsetWidth;
+  iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&mute=1&loop=1&playlist=${v.videoId}&controls=1`;
+
+  document.getElementById('btnAI').disabled   = false;
+  document.getElementById('btnReal').disabled = false;
+}
+
+// ═══════════════════════════════════════════
+// 정답 처리
+// ═══════════════════════════════════════════
+function answer(userSaidAI) {
+  document.getElementById('btnAI').disabled   = true;
+  document.getElementById('btnReal').disabled = true;
+
+  const v       = videos[currentQ];
+  const correct = (userSaidAI === v.isAI);
+  if (correct) score++;
+
+  const card = document.getElementById('feedbackCard');
+  card.className = 'feedback-card ' + (correct ? 'correct' : 'wrong');
+  document.getElementById('feedbackEmoji').textContent  = correct ? '🎉' : '😢';
+  document.getElementById('feedbackTitle').textContent  = correct ? '정답!' : '오답!';
+  document.getElementById('feedbackDetail').textContent = v.isAI ? '🤖 AI 생성 영상입니다' : '📷 실제 촬영 영상입니다';
+  document.getElementById('feedbackChannel').textContent = `출처: ${v.channelTitle}`;
+
+  document.getElementById('feedbackOverlay').classList.add('active');
+
+  feedbackTimer = setTimeout(() => {
+    document.getElementById('feedbackOverlay').classList.remove('active');
+    feedbackTimer = null;
+    currentQ++;
+    if (currentQ >= 10) {
+      showResult();
+    } else {
+      renderGame();
+    }
+  }, 2000);
+}
+
+// ═══════════════════════════════════════════
+// 결과
+// ═══════════════════════════════════════════
+function showResult() {
+  document.getElementById('gameIframe').src = '';
+  document.getElementById('resultLevel').textContent = `레벨 ${currentLevel + 1} 완료!`;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('btnRetry').onclick = () => startLevel(currentLevel);
+  showScreen('result');
+}
+
+// ═══════════════════════════════════════════
+// 유틸
+// ═══════════════════════════════════════════
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
