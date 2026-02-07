@@ -37,7 +37,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulance type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
       pointer-events: none;
       z-index: 999;
     }
@@ -287,7 +287,7 @@
       transition: width 0.4s ease;
     }
 
-    /* ────── 검정 화면만 (썸네일 없음) ────── */
+    /* ────── 검정 화면만 ────── */
     .music-player-card {
       width: 100%;
       max-width: 440px;
@@ -309,7 +309,7 @@
       overflow: hidden;
     }
 
-    /* Play 버튼 (클릭 전) */
+    /* Play 버튼 */
     .play-overlay {
       position: absolute;
       inset: 0;
@@ -444,13 +444,14 @@
 
     .feedback-detail  { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 16px; }
 
-    /* 출처 영상 embed */
+    /* 출처 영상 */
     .source-video {
       width: 100%;
       margin-top: 8px;
       background: #000;
       border-radius: 12px;
       overflow: hidden;
+      margin-bottom: 20px;
     }
 
     .source-video-label {
@@ -465,6 +466,27 @@
       aspect-ratio: 16 / 9;
       border: none;
     }
+
+    /* 다음 문제 버튼 */
+    .btn-next {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      color: var(--bg);
+      background: var(--accent);
+      border: none;
+      padding: 16px 40px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px rgba(200,255,0,0.2);
+    }
+    .btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(200,255,0,0.3);
+    }
+    .btn-next:active { transform: translateY(0); }
 
     /* ────── RESULT ────── */
     #result { gap: 28px; text-align: center; }
@@ -577,7 +599,7 @@
 
   <div class="music-player-card">
     <div class="music-player">
-      <!-- Play 버튼 (클릭 전) -->
+      <!-- Play 버튼 -->
       <div class="play-overlay" id="playOverlay" onclick="playMusic()">
         <div class="play-btn-large">
           <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
@@ -587,7 +609,7 @@
 
       <!-- YouTube iframe (음악만, 숨김) -->
       <iframe id="gameIframe" class="hidden-audio" src="" title="YouTube audio"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen></iframe>
     </div>
   </div>
@@ -613,9 +635,12 @@
     <div class="source-video">
       <div class="source-video-label">출처 영상</div>
       <iframe id="sourceIframe" src="" title="Source video"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen></iframe>
     </div>
+
+    <!-- 다음 문제 버튼 -->
+    <button class="btn-next" onclick="nextQuestion()">다음 문제</button>
   </div>
 </div>
 
@@ -640,8 +665,7 @@
 const YOUTUBE_API_KEY = 'AIzaSyC5N0g90xO7s3U3jMXoo8j1BB9PFLkwhOI';
 
 // ═══════════════════════════════════════════
-// 레벨 설정 (3단계)
-// 무대 영상 제외 키워드 추가
+// 레벨 설정
 // ═══════════════════════════════════════════
 const LEVELS = [
   {
@@ -695,7 +719,6 @@ let currentLevel  = 0;
 let currentQ      = 0;
 let score         = 0;
 let videos        = [];
-let feedbackTimer = null;
 let isPlaying     = false;
 
 // ═══════════════════════════════════════════
@@ -727,10 +750,6 @@ function showScreen(id) {
 // 뒤로가기
 // ═══════════════════════════════════════════
 function goBack() {
-  if (feedbackTimer) {
-    clearTimeout(feedbackTimer);
-    feedbackTimer = null;
-  }
   document.getElementById('feedbackOverlay').classList.remove('active');
   document.getElementById('gameIframe').src = '';
   document.getElementById('sourceIframe').src = '';
@@ -750,9 +769,9 @@ async function searchYoutube(query, isAI) {
     `?part=snippet` +
     `&q=${encodeURIComponent(query)}` +
     `&type=video` +
-    `&videoCategoryId=10` +          // 음악 카테고리
-    `&videoDuration=medium` +         // 5분 이내
-    `&relevanceLanguage=ko` +         // 한국어 우선
+    `&videoCategoryId=10` +
+    `&videoDuration=medium` +
+    `&relevanceLanguage=ko` +
     `&publishedAfter=${after}` +
     `&publishedBefore=${before}` +
     `&maxResults=5` +
@@ -837,11 +856,11 @@ function renderGame() {
   document.getElementById('gameProgress').textContent = `${currentQ + 1} / 10`;
   document.getElementById('progressBar').style.width  = `${((currentQ + 1) / 10) * 100}%`;
 
-  // iframe src 설정 (음악만 재생)
+  // iframe src 설정 (autoplay 제거, 모바일 대응)
   const iframe = document.getElementById('gameIframe');
-  iframe.src = `https://www.youtube.com/embed/${v.videoId}?autoplay=1&controls=0`;
+  iframe.src = `https://www.youtube.com/embed/${v.videoId}?controls=0&enablejsapi=1`;
 
-  // Play 오버레이 다시 표시
+  // Play 오버레이 표시
   document.getElementById('playOverlay').style.display = 'flex';
   isPlaying = false;
 
@@ -850,13 +869,18 @@ function renderGame() {
 }
 
 // ═══════════════════════════════════════════
-// 음악 재생
+// 음악 재생 (모바일 대응)
 // ═══════════════════════════════════════════
 function playMusic() {
   if (isPlaying) return;
   
   isPlaying = true;
   document.getElementById('playOverlay').style.display = 'none';
+  
+  // iframe 재로드 (autoplay=1 추가)
+  const iframe = document.getElementById('gameIframe');
+  const currentSrc = iframe.src;
+  iframe.src = currentSrc.replace('?controls=0', '?autoplay=1&controls=0');
 }
 
 // ═══════════════════════════════════════════
@@ -880,18 +904,21 @@ function answer(userSaidAI) {
   document.getElementById('sourceIframe').src = `https://www.youtube.com/embed/${v.videoId}?controls=1`;
 
   document.getElementById('feedbackOverlay').classList.add('active');
+}
 
-  feedbackTimer = setTimeout(() => {
-    document.getElementById('feedbackOverlay').classList.remove('active');
-    document.getElementById('sourceIframe').src = '';
-    feedbackTimer = null;
-    currentQ++;
-    if (currentQ >= 10) {
-      showResult();
-    } else {
-      renderGame();
-    }
-  }, 5000); // 5초로 증가 (영상 볼 시간)
+// ═══════════════════════════════════════════
+// 다음 문제
+// ═══════════════════════════════════════════
+function nextQuestion() {
+  document.getElementById('feedbackOverlay').classList.remove('active');
+  document.getElementById('sourceIframe').src = '';
+  
+  currentQ++;
+  if (currentQ >= 10) {
+    showResult();
+  } else {
+    renderGame();
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -919,5 +946,3 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
 </html>
-
-
